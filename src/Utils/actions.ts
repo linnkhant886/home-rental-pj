@@ -1,7 +1,7 @@
 "use server";
 
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
-import { profileSchema } from "./schems";
+import { imageSchema, profileSchema, propertySchema } from "./schems";
 import { z } from "zod";
 import prisma from "./prisma";
 import { redirect } from "next/navigation";
@@ -32,11 +32,11 @@ export const fetchProfile = async () => {
 export const createProfileAction = async (formData: FormData) => {
   try {
     const user = await currentUser();
-    // console.log(user);
     if (!user) throw new Error("Please login to create a profile");
 
     const rawData = Object.fromEntries(formData);
     const validatedFields = profileSchema.parse(rawData);
+
     // console.log(validatedFields);
     await prisma.profile.create({
       data: {
@@ -96,7 +96,8 @@ export const imageUpload = async (formData: FormData) => {
   try {
     const user = await getAuthUser();
     const image = formData.get("image") as File;
-    const fullpath = await uploadImage(image);
+    const validatedFile = imageSchema.parse(image);
+    const fullpath = await uploadImage(validatedFile);
 
     await prisma.profile.update({
       where: {
@@ -110,4 +111,74 @@ export const imageUpload = async (formData: FormData) => {
   } catch {
     return { error: "Something went wrong , please contact support" };
   }
+};
+
+export const createProperty = async (formData: FormData) => {
+  try {
+    // return console.log(formData);
+
+    const user = await getAuthUser();
+
+    const rawData = Object.fromEntries(formData);
+    const file = formData.get("image") as File;
+    const validatedFields = propertySchema.parse(rawData);
+    const validateFile = imageSchema.parse(file);
+    const fullpath = await uploadImage(validateFile);
+
+    await prisma.property.create({
+      data: {
+        ...validatedFields,
+        image: fullpath,
+        profileId: user.id,
+      },
+    });
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      const errorMessages = err.errors.map((item) => item.message);
+      return { error: errorMessages };
+    }
+    return { error: "Something went wrong , please contact support" };
+  }
+  redirect("/");
+};
+
+export const fetchProperty = async ({
+  search = "",
+  category,
+}: {
+  search?: string;
+  category?: string;
+}) => {
+  const property = await prisma.property.findMany({
+    where: {
+      category,
+      OR: [
+        {
+          name: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+        {
+          tagline: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+      ],
+    },
+    select: {
+      id: true,
+      name: true,
+      tagline: true,
+      image: true,
+      price: true,
+      country: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return property;
 };

@@ -1,18 +1,18 @@
-"use client";
+import Categories from "@/components/home/Categories";
+import PropertyContainer from "@/components/home/PropertyContainer";
 
-import { Button } from "@/components/ui/button";
-import React from "react";
-
-function Home() {
+async function Home({
+  searchParams,
+}: {
+  searchParams: { category?: string; search?: string };
+}) {
+  const { category, search } = await searchParams;
   return (
     <div>
-      <h1 className=" text-4xl">Home Page</h1>
-
-      <Button variant={"default"} size={"lg"}>
-        Click me
-      </Button>
-
-      
+      <section>
+        <Categories category={category} search={search} />
+        <PropertyContainer category={category} search={search} />
+      </section>
     </div>
   );
 }

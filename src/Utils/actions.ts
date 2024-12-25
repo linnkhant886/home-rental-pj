@@ -8,6 +8,8 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { uploadImage } from "./supabase";
 
+
+
 const getAuthUser = async () => {
   const user = await currentUser();
   if (!user) {
@@ -181,4 +183,38 @@ export const fetchProperty = async ({
   });
 
   return property;
+};
+
+
+
+export const addFavorite = async ({
+  favoriteId,
+  propertyId,
+}: {
+  favoriteId?: string;
+  propertyId: string;
+}) => {
+  const user = await getAuthUser();
+  try {
+    if (favoriteId) {
+      await prisma.favorite.delete({
+        where: {
+          id: favoriteId,
+        },
+      });
+      revalidatePath("/");
+    } else {
+      await prisma.favorite.create({
+        data: {
+          propertyId,
+          profileId: user.id,
+        },
+      });
+    }
+    revalidatePath("/");
+
+    return { message: favoriteId ? "Removed from Faves" : "Added to Faves" };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "An error occurred", };
+  }
 };

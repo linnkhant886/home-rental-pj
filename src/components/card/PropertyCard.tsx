@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PropertyCardProps } from "../home/PropertyContainer";
 import Image from "next/image";
-import { Heart } from "lucide-react";
+import FavouriteToggleButton from "./FavouriteToggleButton";
 
 export default function PropertyCard({
   property,
@@ -10,23 +10,17 @@ export default function PropertyCard({
 }) {
   const { image, id: propertyId, name, tagline, country, price } = property;
   return (
-    <div>
+    <div className="group relative">
       <Link href={`/property/${propertyId}`}>
-        <div className="group relative flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-md">
+        <div className=" flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-md">
           <div className="relative h-[300px] aspect-[4/3] overflow-hidden">
             <Image
               src={image}
               alt={name}
               fill
-              sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw'
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw"
               className="h-full w-full object-cover transition group-hover:scale-105"
             />
-            <button
-              className="absolute right-3 top-3 rounded-full bg-white/90 p-1.5 backdrop-blur-sm transition hover:scale-110 active:scale-95"
-              aria-label="Add to favorites"
-            >
-              <Heart className="h-5 w-5 stroke-[1.5]" />
-            </button>
           </div>
 
           <div className="flex flex-1 flex-col p-4">
@@ -61,6 +55,7 @@ export default function PropertyCard({
           </div>
         </div>
       </Link>
+      <FavouriteToggleButton propertyId={propertyId} />
     </div>
   );
 }

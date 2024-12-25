@@ -1,5 +1,5 @@
 import { fetchProperty } from "@/Utils/actions";
-import Emptysearch from "./Emptysearch";
+import Emptysearch from "./EmptyList";
 import PropertyList from "./PropertyList";
 
 export type PropertyCardProps = {
@@ -18,7 +18,10 @@ export default async function PropertyContainer({
   category?: string;
   search?: string;
 }) {
-  const propertyList: PropertyCardProps[] = await fetchProperty({ category, search });
+  const propertyList: PropertyCardProps[] = await fetchProperty({
+    category,
+    search,
+  });
   if (propertyList.length === 0) return <Emptysearch />;
   return <PropertyList propertyList={propertyList} />;
 }

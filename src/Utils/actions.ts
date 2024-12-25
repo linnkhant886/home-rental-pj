@@ -218,3 +218,26 @@ export const addFavorite = async ({
     return { error: error instanceof Error ? error.message : "An error occurred", };
   }
 };
+
+
+export const fetchFavorites = async () => {
+  const user = await getAuthUser();
+  const favorites = await prisma.favorite.findMany({
+    where: {
+      profileId: user.id,
+    },
+    select: {
+      property: {
+        select: {
+          id: true,
+          name: true,
+          tagline: true,
+          image: true,
+          price: true,
+          country: true,
+        },
+      },
+    },
+  });
+  return favorites.map((item) => item.property);
+};

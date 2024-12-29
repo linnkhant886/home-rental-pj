@@ -56,18 +56,18 @@ export const CardSubmitteButton = ({
     <Button
       type="submit"
       size={"icon"}
-      className="absolute right-3 top-3 rounded-full bg-white/90 text-black hover:bg-white p-1 backdrop-blur-sm transition hover:scale-110 active:scale-95"
+      className="bg-white hover:bg-white p-1 backdrop-blur-sm transition hover:scale-110 active:scale-95"
       aria-label="Add to favorites"
       disabled={pending}
     >
       {pending ? (
         <>
-          <IoReload className=' animate-spin' /> 
+          <IoReload className="animate-spin text-red-500" />
         </>
       ) : isFavourite ? (
-        <FaHeart  className="text-red-500 "/>
+        <FaHeart className="text-red-500 " />
       ) : (
-        <FaRegHeart />
+        <FaRegHeart className="text-red-500 " />
       )}
     </Button>
   );

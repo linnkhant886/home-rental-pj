@@ -1,4 +1,3 @@
-import countries from "world-countries";
 import {
   Select,
   SelectContent,
@@ -7,16 +6,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "../ui/label";
-const formattedCountries = countries.map((item) => ({
-  code: item.cca2,
-  name: item.name.common,
-  flag: item.flag,
-  location: item.latlng,
-  region: item.region,
-}));
+import { formattedCountries } from "@/Utils/countries";
 
-// const findCountryByCode = (code: string) =>
-//   formattedCountries.find((item) => item.code === code);
+
 
 export default function CategoriesInput() {
   return (

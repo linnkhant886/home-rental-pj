@@ -29,9 +29,7 @@ export default function NavSearch() {
     }
   }, [searchParams.get("search")]);
   console.log(searchParams.get("search"));
-  // console.log(search);
-  // console.log(pathname);
-  // console.log(searchParams);
+  
   return (
     <Input
       className="max-w-xs dark:bg-muted"

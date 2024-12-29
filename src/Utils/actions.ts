@@ -8,8 +8,6 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { uploadImage } from "./supabase";
 
-
-
 const getAuthUser = async () => {
   const user = await currentUser();
   if (!user) {
@@ -39,7 +37,6 @@ export const createProfileAction = async (formData: FormData) => {
     const rawData = Object.fromEntries(formData);
     const validatedFields = profileSchema.parse(rawData);
 
-    // console.log(validatedFields);
     await prisma.profile.create({
       data: {
         clerkId: user.id,
@@ -185,8 +182,6 @@ export const fetchProperty = async ({
   return property;
 };
 
-
-
 export const addFavorite = async ({
   favoriteId,
   propertyId,
@@ -215,10 +210,11 @@ export const addFavorite = async ({
 
     return { message: favoriteId ? "Removed from Faves" : "Added to Faves" };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : "An error occurred", };
+    return {
+      error: error instanceof Error ? error.message : "An error occurred",
+    };
   }
 };
-
 
 export const fetchFavorites = async () => {
   const user = await getAuthUser();
@@ -240,4 +236,16 @@ export const fetchFavorites = async () => {
     },
   });
   return favorites.map((item) => item.property);
+};
+
+export const propertyDetail = async (propertyId: string) => {
+  const property = await prisma.property.findUnique({
+    where: {
+      id: propertyId,
+    },
+    include: {
+      profile: true,
+    },
+  });
+  return property;
 };

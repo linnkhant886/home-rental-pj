@@ -55,7 +55,9 @@ export default function PropertyCard({
           </div>
         </div>
       </Link>
-      <FavouriteToggleButton propertyId={propertyId} />
+      <div className="absolute right-3 top-3 rounded-full ">
+        <FavouriteToggleButton propertyId={propertyId} />
+      </div>
     </div>
   );
 }

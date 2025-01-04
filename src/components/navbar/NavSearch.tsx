@@ -9,7 +9,7 @@ export default function NavSearch() {
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const [search, setsearch] = useState(searchParams.get("search") || "");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
 
   const handleSearch = useDebouncedCallback((value: string) => {
     const param = new URLSearchParams(searchParams);
@@ -25,10 +25,10 @@ export default function NavSearch() {
 
   useEffect(() => {
     if (!searchParams.get("search")) {
-      setsearch("");
+      setSearch("");
     }
-  }, [searchParams.get("search")]);
-  console.log(searchParams.get("search"));
+  }, [searchParams]);
+  // console.log(searchParams.get("search"));
   
   return (
     <Input
@@ -36,7 +36,7 @@ export default function NavSearch() {
       type="search"
       placeholder="Find a property....."
       onChange={(e) => {
-        setsearch(e.target.value);
+        setSearch(e.target.value);
         handleSearch(e.target.value);
       }}
       value={search}

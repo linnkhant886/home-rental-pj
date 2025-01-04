@@ -8,7 +8,7 @@ async function Home({
 }: {
   searchParams: { category?: string; search?: string };
 }) {
-  const { category, search } = await searchParams;
+  const { category, search } =  searchParams;
   return (
       <section>
         <Categories category={category} search={search} />

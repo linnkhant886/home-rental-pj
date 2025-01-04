@@ -39,11 +39,11 @@ export default async function PropertyDetailPage({
       <ImageContainer image={property.image} name={property.name} />
       <section className=" lg:grid lg:grid-cols-12 mt-10 gap-x-12">
         <div className=" lg:col-span-8 ">
-          <div className="flex gap-x-4 bg-lime-200">
+          <div className="flex gap-x-4">
             <p className=" text-xl font-semibold">{property.name}</p>
 
             <p>
-              <Rating inPage={true} propertyId={property.id} />
+              <Rating inPage={true}  />
             </p>
           </div>
           <p className=" mt-2 text-muted-foreground">
@@ -63,7 +63,7 @@ export default async function PropertyDetailPage({
         </div>
 
         <div className=" lg:col-span-4 flex flex-col items-center  mx-auto">
-          <BookingCalender />
+          <BookingCalender  />
         </div>
       </section>
     </div>

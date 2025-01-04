@@ -12,14 +12,15 @@ import { Separator } from "@/components/ui/separator";
 import { propertyDetail } from "@/Utils/actions";
 import { redirect } from "next/navigation";
 
+type Params = Promise<{ id: string }>;
 
 
-export default async function PropertyDetailPage({
-  params,
-}: {
-  params: { id: string };
+
+export default async function PropertyDetailPage(props: {
+  params: Params;
 }) {
-  const { id } = await params;
+  const params = await props.params
+  const { id } = params;
   const property = await propertyDetail(id);
   if (!property) redirect("/");
 
@@ -43,7 +44,7 @@ export default async function PropertyDetailPage({
             <p className=" text-xl font-semibold">{property.name}</p>
 
             <p>
-              <Rating inPage={true}  />
+              <Rating inPage={true} />
             </p>
           </div>
           <p className=" mt-2 text-muted-foreground">
@@ -63,7 +64,7 @@ export default async function PropertyDetailPage({
         </div>
 
         <div className=" lg:col-span-4 flex flex-col items-center  mx-auto">
-          <BookingCalender  />
+          <BookingCalender />
         </div>
       </section>
     </div>

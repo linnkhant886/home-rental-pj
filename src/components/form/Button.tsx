@@ -6,6 +6,10 @@ import { Button } from "../ui/button";
 import { SignInButton } from "@clerk/nextjs";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { IoReload } from "react-icons/io5";
+import { LuTrash2 } from "react-icons/lu";
+import { FiEdit } from "react-icons/fi";
+import { deleteReview } from "@/Utils/actions";
+import { useState } from "react";
 
 type SubmitButtonProp = {
   className?: string;
@@ -68,6 +72,61 @@ export const CardSubmitteButton = ({
         <FaHeart className="text-red-500 " />
       ) : (
         <FaRegHeart className="text-red-500 " />
+      )}
+    </Button>
+  );
+};
+
+type actionType = "edit" | "delete";
+
+export const CardActionButtons = ({
+  actionType,
+  reviewId,
+}: {
+  actionType: actionType;
+  reviewId: string;
+}) => {
+  const [isPending, setIsPending] = useState(false);
+
+  const handleAction = async () => {
+    setIsPending(true); // Set pending state to true
+    try {
+      if (actionType === "delete") {
+        await deleteReview(reviewId);
+      }
+    } catch (error) {
+      setIsPending(false); // Set pending state to false
+      console.error("Action failed:", error);
+    }
+  };
+
+  const renderIcon = () => {
+    switch (actionType) {
+      case "edit":
+        return <FiEdit className="text-red-500 " />;
+      case "delete":
+        return <LuTrash2 className="text-red-500 " />;
+      default:
+        const never: never = actionType;
+        throw new Error(`Invalid action type: ${never}`);
+    }
+  };
+
+  return (
+    <Button
+      type="submit"
+      size={"icon"}
+      onClick={handleAction}
+      className="bg-white hover:bg-white p-1 backdrop-blur-sm transition hover:scale-110 active:scale-95"
+      aria-label="Add to favorites"
+      disabled={isPending}
+    >
+      {isPending ? (
+        <>
+          <IoReload className="animate-spin text-red-500" />
+        </>
+      ) : (
+        renderIcon()
       )}
     </Button>
   );

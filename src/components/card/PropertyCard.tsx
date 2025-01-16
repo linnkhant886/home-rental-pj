@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PropertyCardProps } from "../home/PropertyContainer";
 import Image from "next/image";
 import FavouriteToggleButton from "./FavouriteToggleButton";
+import Rating from "../properties/Rating";
 
 export default function PropertyCard({
   property,
@@ -33,14 +34,7 @@ export default function PropertyCard({
                   {tagline.substring(0, 20)}
                 </p>
               </div>
-              {/* {rating && (
-                <div className="flex items-center gap-1">
-                  <span className="text-sm font-medium">★ {rating.value}</span>
-                  <span className="text-sm text-gray-500">
-                    ({rating.count})
-                  </span>
-                </div>
-              )} */}
+              <Rating  propertyId={propertyId}/>
             </div>
 
             <div className="mt-auto pt-4">
@@ -55,6 +49,7 @@ export default function PropertyCard({
           </div>
         </div>
       </Link>
+
       <div className="absolute right-3 top-3 rounded-full ">
         <FavouriteToggleButton propertyId={propertyId} />
       </div>

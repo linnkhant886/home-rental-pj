@@ -8,25 +8,30 @@ import ImageContainer from "@/components/properties/ImageContainer";
 import Rating from "@/components/properties/Rating";
 import ShareButton from "@/components/properties/ShareButton";
 import Userinfo from "@/components/properties/Userinfo";
+import PropertyReview from "@/components/reviews/PropertyReview";
+import SubmitReviews from "@/components/reviews/SubmitReviews";
 import { Separator } from "@/components/ui/separator";
-import { propertyDetail } from "@/Utils/actions";
+import { findExistingReview, propertyDetail } from "@/Utils/actions";
 import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 
 type Params = Promise<{ id: string }>;
 
-
-
-export default async function PropertyDetailPage(props: {
-  params: Params;
-}) {
-  const params = await props.params
+export default async function PropertyDetailPage(props: { params: Params }) {
+  const params = await props.params;
   const { id } = params;
   const property = await propertyDetail(id);
   if (!property) redirect("/");
 
+  const { userId } = await auth();
+
+  const notOwnerofProperty = userId !== property.profile?.clerkId;
+  const allowReview =
+    notOwnerofProperty && userId && !(await findExistingReview(property.id ));
+
   const firstName = property.profile?.firstName;
   const userImage = property.profile?.profileImage;
-  // console.log(property)
+  // console.log(review)
   return (
     <div>
       <BreadCrumb name={property.name} />
@@ -44,7 +49,7 @@ export default async function PropertyDetailPage(props: {
             <p className=" text-xl font-semibold">{property.name}</p>
 
             <p>
-              <Rating inPage={true} />
+              <Rating inPage={true}  propertyId={property.id} />
             </p>
           </div>
           <p className=" mt-2 text-muted-foreground">
@@ -67,6 +72,8 @@ export default async function PropertyDetailPage(props: {
           <BookingCalender />
         </div>
       </section>
+      {allowReview && <SubmitReviews propertyId={property.id} />}
+      <PropertyReview propertyId={property.id} />
     </div>
   );
 }

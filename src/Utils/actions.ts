@@ -1,7 +1,12 @@
 "use server";
 
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
-import { imageSchema, profileSchema, propertySchema } from "./schems";
+import {
+  imageSchema,
+  profileSchema,
+  propertySchema,
+  reviewSchema,
+} from "./schems";
 import { z } from "zod";
 import prisma from "./prisma";
 import { redirect } from "next/navigation";
@@ -249,3 +254,118 @@ export const propertyDetail = async (propertyId: string) => {
   });
   return property;
 };
+
+export const createReview = async (formData: FormData) => {
+  // return console.log(formData);
+  try {
+    const user = await getAuthUser();
+    const rawData = Object.fromEntries(formData);
+    const validatedFields = reviewSchema.parse(rawData);
+    const ratingasNumber = validatedFields.rating as number;
+
+    await prisma.review.create({
+      data: {
+        ...validatedFields,
+        rating: ratingasNumber,
+        profileId: user.id,
+      },
+    });
+    revalidatePath(`/property/${validatedFields.propertyId}`);
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      const errorMessages = err.errors.map((item) => item.message);
+      return { error: errorMessages };
+    }
+    return { error: "Something went wrong , please contact support" };
+  }
+};
+
+export const fetchReviews = async (propertyId: string) => {
+  const reviews = await prisma.review.findMany({
+    where: {
+      propertyId,
+    },
+    include: {
+      profile: {
+        select: {
+          firstName: true,
+          profileImage: true,
+        },
+      },
+    },
+  });
+  return reviews;
+};
+
+
+export const fetchUserReviews = async () => {
+  const user = await getAuthUser();
+  const reviews = await prisma.review.findMany({
+    where: {
+      profileId: user.id,
+    },
+    include: {
+      property: {
+        select: {
+          name: true,
+        },
+      },
+      profile: {
+        select: {
+          profileImage: true,
+        }
+      },
+    },
+  });
+  return reviews;
+}
+
+
+export const deleteReview = async (reviewId: string) => {
+  const user = await getAuthUser();
+  try {
+    await prisma.review.delete({
+      where: {
+        profileId: user.id,
+        id: reviewId
+      },
+    })
+    revalidatePath("/reviews");
+  } catch {
+    return { error: "Something went wrong , please contact support" };
+  }
+}
+
+
+export async function fetchPropertyRating(propertyId: string) {
+  const result = await prisma.review.groupBy({
+    by: ['propertyId'],
+    _avg: {
+      rating: true,
+    },
+    _count: {
+      rating: true,
+    },
+    where: {
+      propertyId,
+    },
+  });
+
+  // empty array if no reviews
+  return {
+    rating: result[0]?._avg.rating?.toFixed(1) ?? 0,
+    count: result[0]?._count.rating ?? 0,
+  };
+}
+
+
+export const findExistingReview = async (propertyId: string) => {
+  const user = await getAuthUser();
+  const review = await prisma.review.findFirst({
+    where: {
+      profileId: user.id,
+      propertyId,
+    },
+  });
+  return review;
+}

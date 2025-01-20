@@ -70,3 +70,12 @@ export const reviewSchema = z.object({
   rating: z.coerce.number().int().min(1).max(5),
   comment: z.string().min(10).max(1000),
 });
+
+
+export const bookingSchema = z.object({
+  checkIn: z.string(),
+  checkOut: z.string(),
+  propertyId: z.string(),
+  orderTotal: z.coerce.number().int().min(0),
+  totalNights: z.coerce.number().int().min(1),
+})

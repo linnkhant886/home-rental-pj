@@ -1,6 +1,5 @@
 import FavouriteToggleForm from "@/components/card/FavouriteToggleForm";
 import Amenities from "@/components/properties/Amenities";
-import BookingCalender from "@/components/properties/BookingCalender";
 import BreadCrumb from "@/components/properties/BreadCrumb";
 import DescriptionProperty from "@/components/properties/DescriptionProperty";
 import PropertyPage from "@/components/properties/DynamicMap";
@@ -15,7 +14,10 @@ import { findExistingReview, propertyDetail } from "@/Utils/actions";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 
+import DynamicBookingPage from "@/components/booking/ီိDynamicBooking";
+
 type Params = Promise<{ id: string }>;
+
 
 export default async function PropertyDetailPage(props: { params: Params }) {
   const params = await props.params;
@@ -27,7 +29,7 @@ export default async function PropertyDetailPage(props: { params: Params }) {
 
   const notOwnerofProperty = userId !== property.profile?.clerkId;
   const allowReview =
-    notOwnerofProperty && userId && !(await findExistingReview(property.id ));
+    notOwnerofProperty && userId && !(await findExistingReview(property.id));
 
   const firstName = property.profile?.firstName;
   const userImage = property.profile?.profileImage;
@@ -43,13 +45,13 @@ export default async function PropertyDetailPage(props: { params: Params }) {
         </div>
       </div>
       <ImageContainer image={property.image} name={property.name} />
-      <section className=" lg:grid lg:grid-cols-12 mt-10 gap-x-12">
+      <section className=" lg:grid lg:grid-cols-12 mt-10 gap-x-4">
         <div className=" lg:col-span-8 ">
           <div className="flex gap-x-4">
             <p className=" text-xl font-semibold">{property.name}</p>
 
             <p>
-              <Rating inPage={true}  propertyId={property.id} />
+              <Rating inPage={true} propertyId={property.id} />
             </p>
           </div>
           <p className=" mt-2 text-muted-foreground">
@@ -68,8 +70,14 @@ export default async function PropertyDetailPage(props: { params: Params }) {
           <PropertyPage countryName={property.country} />
         </div>
 
-        <div className=" lg:col-span-4 flex flex-col items-center  mx-auto">
-          <BookingCalender />
+        <div className=" lg:col-span-4 flex flex-col items-center w-full  mx-auto">
+          {/* <BookingCalender />
+           */}
+          <DynamicBookingPage
+            propertyId={property.id}
+            price={property.price}
+            bookings={property.bookings}
+          />
         </div>
       </section>
       {allowReview && <SubmitReviews propertyId={property.id} />}

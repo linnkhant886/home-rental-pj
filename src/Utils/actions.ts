@@ -250,6 +250,12 @@ export const propertyDetail = async (propertyId: string) => {
     },
     include: {
       profile: true,
+      bookings: {
+        select: {
+          checkIn: true,
+          checkOut: true,
+        },
+      },
     },
   });
   return property;
@@ -297,7 +303,6 @@ export const fetchReviews = async (propertyId: string) => {
   return reviews;
 };
 
-
 export const fetchUserReviews = async () => {
   const user = await getAuthUser();
   const reviews = await prisma.review.findMany({
@@ -313,13 +318,12 @@ export const fetchUserReviews = async () => {
       profile: {
         select: {
           profileImage: true,
-        }
+        },
       },
     },
   });
   return reviews;
-}
-
+};
 
 export const deleteReview = async (reviewId: string) => {
   const user = await getAuthUser();
@@ -327,19 +331,18 @@ export const deleteReview = async (reviewId: string) => {
     await prisma.review.delete({
       where: {
         profileId: user.id,
-        id: reviewId
+        id: reviewId,
       },
-    })
+    });
     revalidatePath("/reviews");
   } catch {
     return { error: "Something went wrong , please contact support" };
   }
-}
-
+};
 
 export async function fetchPropertyRating(propertyId: string) {
   const result = await prisma.review.groupBy({
-    by: ['propertyId'],
+    by: ["propertyId"],
     _avg: {
       rating: true,
     },
@@ -358,7 +361,6 @@ export async function fetchPropertyRating(propertyId: string) {
   };
 }
 
-
 export const findExistingReview = async (propertyId: string) => {
   const user = await getAuthUser();
   const review = await prisma.review.findFirst({
@@ -368,4 +370,8 @@ export const findExistingReview = async (propertyId: string) => {
     },
   });
   return review;
-}
+};
+
+export const createBooking = async () => {
+  return console.log("hello");
+};

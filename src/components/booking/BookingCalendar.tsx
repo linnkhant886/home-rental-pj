@@ -1,4 +1,4 @@
-import { defaultSelected } from "@/Utils/calender";
+import { defaultSelected, generateBlockedPeriods } from "@/Utils/calender";
 import { useProperty } from "@/Utils/store";
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
@@ -12,6 +12,10 @@ export default function BookingCalendar() {
   useEffect(() => {
     useProperty.setState({ range });
   }, [range]);
+
+  const bookings = useProperty((state) => state.bookings);
+  // console.log(bookings);
+  const blockPeriods = generateBlockedPeriods({ bookings, today: currentDate });
   return (
     <div className="flex justify-center w-full">
       <Calendar
@@ -19,6 +23,7 @@ export default function BookingCalendar() {
         defaultMonth={currentDate}
         selected={range}
         onSelect={setRange}
+        disabled={blockPeriods}
         className="mb-4"
       />
     </div>

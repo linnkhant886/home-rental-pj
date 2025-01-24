@@ -12,6 +12,7 @@ import prisma from "./prisma";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { uploadImage } from "./supabase";
+import { calculateTotal } from "./calculateTotal";
 
 const getAuthUser = async () => {
   const user = await currentUser();
@@ -372,6 +373,124 @@ export const findExistingReview = async (propertyId: string) => {
   return review;
 };
 
-export const createBooking = async () => {
-  return console.log("hello");
+export const createBooking = async (
+  prevState: { message: string; error: string; redirectUrl?: string }, // Add redirectUrl to the state
+  formData: FormData
+) => {
+  try {
+    const user = await getAuthUser();
+    if (!user) {
+      return { message: "", error: "User not authenticated" }; // Return error if user is not authenticated
+    }
+
+    // Extract form data
+    const propertyId = formData.get("propertyId")?.toString();
+    const checkIn = formData.get("checkIn")?.toString();
+    const checkOut = formData.get("checkOut")?.toString();
+
+    // Validate input
+    if (!propertyId || !checkIn || !checkOut) {
+      return { message: "", error: "Missing required fields" }; // Return error if input is invalid
+    }
+
+    // Fetch property details
+    const property = await prisma.property.findUnique({
+      where: { id: propertyId },
+      select: { price: true },
+    });
+
+    if (!property) {
+      return { message: "", error: "Property not found" }; // Return error if property is not found
+    }
+
+    // Calculate total cost
+    const { total, totalNights } = calculateTotal({
+      checkIn: new Date(checkIn),
+      checkOut: new Date(checkOut),
+      price: property.price,
+    });
+
+    // Create booking
+    await prisma.booking.create({
+      data: {
+        profileId: user.id,
+        propertyId,
+        checkIn: new Date(checkIn),
+        checkOut: new Date(checkOut),
+        orderTotal: total,
+        totalNights,
+      },
+    });
+
+    // Return success message and redirect URL
+    return {
+      message: "Booking created successfully!",
+      error: "",
+      redirectUrl: "/bookings", // Redirect to a success page with booking ID
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      message: "",
+      error: "Something went wrong. Please contact support.",
+    }; // Return error if something goes wrong
+  }
+};
+
+export const fetchBookingbyUser = async () => {
+  const user = await getAuthUser();
+  const bookings = await prisma.booking.findMany({
+    where: {
+      profileId: user.id,
+    },
+    include: {
+      property: {
+        select: {
+          name: true,
+          country: true,
+        },
+      },
+    },
+    orderBy: {
+      checkIn: "desc",
+    },
+  });
+  return bookings;
+};
+
+export const getUserName = async (prevState: unknown, formData: FormData) => {
+  const userName = formData.get("userName")?.toString().trim();
+
+  if (!userName) {
+    return { message: "Username is required" };
+  }
+
+  // Simulate some processing
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  return { message: `Hello, ${userName}!` };
+};
+
+export const deleteBooking = async (
+  prevState: { message: string; error: string }, // Add prevState parameter
+  formData: FormData
+) => {
+  const user = await getAuthUser();
+
+  const bookingId = formData.get("bookingId")?.toString();
+  try {
+    await prisma.booking.delete({
+      where: {
+        profileId: user.id,
+        id: bookingId,
+      },
+    });
+    revalidatePath("/bookings");
+    return { message: 'Booking deleted successfully', error: '' };
+  } catch {
+    return {
+      message: "",
+      error: "Something went wrong , please contact support",
+    };
+  }
 };

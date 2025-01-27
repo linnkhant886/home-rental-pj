@@ -486,7 +486,73 @@ export const deleteBooking = async (
       },
     });
     revalidatePath("/bookings");
-    return { message: 'Booking deleted successfully', error: '' };
+    return { message: "Booking deleted successfully", error: "" };
+  } catch {
+    return {
+      message: "",
+      error: "Something went wrong , please contact support",
+    };
+  }
+};
+
+export const fetchRentalsbyUser = async () => {
+  const user = await getAuthUser();
+
+  const properties = await prisma.property.findMany({
+    where: {
+      profileId: user.id,
+    },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      bookings: {
+        select: {
+          totalNights: true,
+          orderTotal: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  // Add totalIncome and totalNights calculation for each property
+  return properties.map((property) => {
+    const totalNights = property.bookings.reduce(
+      (sum, booking) => sum + booking.totalNights,
+      0
+    );
+
+    const totalIncome = property.bookings.reduce(
+      (sum, booking) => sum + booking.orderTotal,
+      0
+    );
+
+    return {
+      ...property,
+      totalIncome,
+      totalNights,
+    };
+  });
+};
+
+export const deleteRental = async (
+  prevState: { message: string; error: string }, 
+  formData: FormData
+) => {
+  const user = await getAuthUser();
+  const rentalId = formData.get("rentalId") as string;
+  try {
+    await prisma.property.delete({
+      where: {
+        profileId: user.id,
+        id: rentalId,
+      },
+    });
+    revalidatePath("/rentals");
+    return { message: "Rental deleted successfully", error: "" };
   } catch {
     return {
       message: "",

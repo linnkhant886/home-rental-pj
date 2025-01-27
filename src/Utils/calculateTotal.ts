@@ -16,6 +16,6 @@ export const calculateTotal = ({
   const tax = subTotal * 0.1;
   const cleaningFee = 21;
   const serviceFee = 40;
-  const total = totalNights + tax + cleaningFee + serviceFee;
-  return { total, tax, cleaningFee, serviceFee , subTotal,totalNights};
+  const total = totalNights + tax + cleaningFee + serviceFee + subTotal;
+  return { total, tax, cleaningFee, serviceFee, subTotal, totalNights };
 };

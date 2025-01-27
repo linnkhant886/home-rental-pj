@@ -1,4 +1,5 @@
 import DeleteBooking from "@/components/booking/DeleteBooking";
+import Emptysearch from "@/components/home/EmptyList";
 import {
   Table,
   TableBody,
@@ -9,19 +10,26 @@ import {
 } from "@/components/ui/table";
 import { fetchBookingbyUser } from "@/Utils/actions";
 
-
 export default async function BookingsTable() {
-    const userBooking = await fetchBookingbyUser();
-    // console.log(userBooking);
-
-    const formatDate = (dateString: Date) => {
-        return dateString.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-      };
+  const userBooking = await fetchBookingbyUser();
+  // console.log(userBooking);
+  if (!userBooking || userBooking.length === 0)
+    return (
       
+      <Emptysearch
+        heading="No Bookings Found"
+        message="Add some bookings"
+        btnText="Add Booking"
+      />
+    );
+  const formatDate = (dateString: Date) => {
+    return dateString.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
   return (
     <div className="cursor-pointer">
       <p>Total Bookings: {userBooking.length}</p>
@@ -47,7 +55,7 @@ export default async function BookingsTable() {
               <TableCell>{formatDate(booking.checkIn)}</TableCell>
               <TableCell>{formatDate(booking.checkOut)}</TableCell>
               <TableCell>
-                <DeleteBooking bookingId={booking.id} /> 
+                <DeleteBooking bookingId={booking.id} />
               </TableCell>
             </TableRow>
           ))}

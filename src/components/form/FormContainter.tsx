@@ -25,6 +25,8 @@ export default function FormContainer({
 
   const router = useRouter();
 
+  console.log(state?.message);
+
   useEffect(() => {
     if (state.message) {
       toast({ description: state.message, variant: 'default' }); // Show success toast

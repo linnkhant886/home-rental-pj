@@ -36,9 +36,12 @@ export default async function myRental() {
               <TableCell>{rental.price}</TableCell>
               <TableCell>{rental.totalNights}</TableCell>
               <TableCell>{rental.totalIncome}</TableCell>
-              <TableCell className="flex  items-center">
+              <TableCell className="flex  items-center gap-x-2">
                 <Link href={`/rentals/${rental.id}`}>
-                  <MdOutlineEditNote size={25} className="text-primary" />
+                  <MdOutlineEditNote
+                    size={25}
+                    className="text-primary hover:scale-110 active:scale-95"
+                  />
                 </Link>
                 <DeleteRental rentalId={rental.id} />
               </TableCell>

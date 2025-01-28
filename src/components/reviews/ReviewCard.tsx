@@ -7,7 +7,7 @@ export interface ReviewCardProps {
   userImage: string;
   rating: number;
   comment: string;
-  action?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export default function ReviewCard({
@@ -15,7 +15,7 @@ export default function ReviewCard({
   userImage,
   rating,
   comment,
-  action,
+  children,
 }: ReviewCardProps) {
   return (
     <Card className="relative">
@@ -38,7 +38,7 @@ export default function ReviewCard({
       <CardContent>
         <p>{comment}</p>
       </CardContent>
-      {action && <div className="absolute right-3 top-3">{action}</div>}
+      <div className="absolute right-3 top-3">{children}</div>
     </Card>
   );
 }

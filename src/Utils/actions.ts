@@ -326,8 +326,12 @@ export const fetchUserReviews = async () => {
   return reviews;
 };
 
-export const deleteReview = async (reviewId: string) => {
+export const deleteReview = async (
+  prevState: { message: string; error: string }, // Add prevState parameter
+  formData: FormData
+) => {
   const user = await getAuthUser();
+  const reviewId = formData.get("reviewId") as string;
   try {
     await prisma.review.delete({
       where: {
@@ -335,9 +339,14 @@ export const deleteReview = async (reviewId: string) => {
         id: reviewId,
       },
     });
+
     revalidatePath("/reviews");
+    return { message: "Review deleted successfully", error: "" };
   } catch {
-    return { error: "Something went wrong , please contact support" };
+    return {
+      message: "",
+      error: "Something went wrong , please contact support",
+    };
   }
 };
 
@@ -485,7 +494,9 @@ export const deleteBooking = async (
         id: bookingId,
       },
     });
+    // 100ms delay
     revalidatePath("/bookings");
+
     return { message: "Booking deleted successfully", error: "" };
   } catch {
     return {
@@ -539,7 +550,7 @@ export const fetchRentalsbyUser = async () => {
 };
 
 export const deleteRental = async (
-  prevState: { message: string; error: string }, 
+  prevState: { message: string; error: string },
   formData: FormData
 ) => {
   const user = await getAuthUser();
@@ -559,4 +570,11 @@ export const deleteRental = async (
       error: "Something went wrong , please contact support",
     };
   }
+};
+
+export const editRental = async (
+  prevState: { message: string; error: string },
+  formData: FormData
+) => {
+  console.log(formData);
 };

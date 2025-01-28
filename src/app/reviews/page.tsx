@@ -1,7 +1,7 @@
-import { CardActionButtons } from "@/components/form/Button";
 import EmptyList from "@/components/home/EmptyList";
+import { DeleteReview } from "@/components/reviews/DeleteReview";
 import ReviewCard from "@/components/reviews/ReviewCard";
-import { fetchUserReviews } from "@/Utils/actions";
+import {  fetchUserReviews } from "@/Utils/actions";
 
 export default async function reviews() {
   const userReview = await fetchUserReviews();
@@ -34,11 +34,13 @@ export default async function reviews() {
               rating={rating}
               comment={comment}
               userImage={profileImage}
-              action={<CardActionButtons actionType="delete" reviewId={review.id} />}
-            />
+            >
+              <DeleteReview reviewId={review.id} />
+            </ReviewCard>
           );
         })}
       </div>
     </div>
   );
 }
+

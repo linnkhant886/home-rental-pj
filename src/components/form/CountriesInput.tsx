@@ -8,13 +8,14 @@ import {
 import { Label } from "../ui/label";
 import { formattedCountries } from "@/Utils/countries";
 
-
-
-export default function CategoriesInput() {
+export default function CategoriesInput({ country }: { country: string }) {
+  const defaultCountry =
+    formattedCountries.find((c) => c.name === country)?.name ||
+    formattedCountries[0].name;
   return (
     <div className="space-y-2">
       <Label className="capitalize ">Country </Label>
-      <Select defaultValue={formattedCountries[0].name} name="country" required>
+      <Select defaultValue={defaultCountry} name="country" required>
         <SelectTrigger id="country">
           <SelectValue />
         </SelectTrigger>

@@ -573,8 +573,62 @@ export const deleteRental = async (
 };
 
 export const editRental = async (
-  prevState: { message: string; error: string },
+  prevState: { message: string; error: string; redirectUrl?: string },
   formData: FormData
 ) => {
-  console.log(formData);
+  try {
+
+    console.log("Form Data:", formData);
+
+
+    // const rawData = Object.fromEntries(formData);
+    // const validatedFields = propertySchema.parse(rawData);
+    // const amenities = formData.getAll("amenities") as string[];
+    // Simulate a successful response
+
+
+
+    
+    
+    return {
+      message: "Rental updated successfully!",
+      error: "",
+      redirectUrl: "/success", // Redirect URL after successful submission
+    };
+  } catch (error) {
+    console.error("Error updating rental:", error);
+    return {
+      message: "",
+      error: "Failed to update rental. Please try again.",
+      redirectUrl: "",
+    };
+  }
 };
+
+export const rentalImageUpload = async (formData: FormData) => {
+  try {
+    // return console.log(formData);
+
+    const image = formData.get("image") as File;
+    const propertyId = formData.get("propertyId") as string;
+    const validatedFile = imageSchema.parse(image);
+    const fullpath = await uploadImage(validatedFile);
+
+    await prisma.property.update({
+      where: {
+        id: propertyId,
+      },
+      data: {
+        image: fullpath,
+      },
+    });
+    revalidatePath("/rentals");
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      const errorMessages = err.errors.map((item) => item.message);
+      return { error: errorMessages };
+    }
+    return { error: "Something went wrong , please contact support" };
+  }
+};
+

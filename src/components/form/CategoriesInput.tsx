@@ -1,3 +1,5 @@
+"use client";
+
 import { IconType } from "react-icons";
 import { MdCabin } from "react-icons/md";
 
@@ -77,11 +79,14 @@ export const categories: Category[] = [
   },
 ];
 
-export default function CategoriesInput() {
+export default function CategoriesInput({ category }: { category: string }) {
+  const defaultCategory =
+    categories.find((item) => item.label === category)?.label ||
+    categories[0].label;
   return (
     <div className="space-y-2">
       <Label className="capitalize ">Categories </Label>
-      <Select defaultValue={categories[0].label} name="category" required>
+      <Select defaultValue={defaultCategory} name="category" required>
         <SelectTrigger id="category">
           <SelectValue />
         </SelectTrigger>

@@ -7,9 +7,10 @@ import { Button } from "../ui/button";
 
 type Props = {
   detail: string;
+  defaultValue?: number;
 };
-export default function CounterInput({ detail }: Props) {
-  const [count, setcount] = useState(0);
+export default function CounterInput({ detail, defaultValue }: Props) {
+  const [count, setcount] = useState(defaultValue || 0);
 
   const increaseCount = () => {
     setcount(count + 1);

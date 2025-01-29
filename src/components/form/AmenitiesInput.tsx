@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { IconType } from "react-icons";
 import { Label } from "../ui/label";
-type Amenity = {
+
+export type Amenity = {
   name: string;
   icon: IconType;
   selected: boolean;
@@ -94,9 +95,21 @@ export const conservativeAmenities: Amenity[] = [
   { name: "first aid kit", icon: FiTv, selected: false },
 ];
 
-export default function AmenitiesInput() {
+export default function AmenitiesInput({
+  defaultValue,
+}: {
+  defaultValue?: Amenity[];
+}) {
+  const amenitiesWithIcons = amenities.map((amenity) => ({
+    ...amenity,
+    selected:
+      defaultValue?.some(
+        (defaultAmenity) => defaultAmenity.name === amenity.name
+      ) || amenity.selected,
+  }));
+
   const [selectedAmenities, setSelectedAmenities] =
-    useState<Amenity[]>(amenities);
+    useState<Amenity[]>(amenitiesWithIcons);
 
   const handleChange = (amenity: Amenity) => {
     setSelectedAmenities((prev) => {
@@ -115,7 +128,7 @@ export default function AmenitiesInput() {
       <input
         type="hidden"
         name="amenities"
-        value={JSON.stringify(selectedAmenities.filter((a) => a.selected))}
+        value={JSON.stringify(selectedAmenities)}
       />
       <div className=" grid grid-cols-2 gap-3">
         {selectedAmenities.map((amenity) => (

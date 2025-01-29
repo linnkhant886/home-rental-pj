@@ -1,3 +1,4 @@
+'use client';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
@@ -25,7 +26,6 @@ export default function FormContainer({
 
   const router = useRouter();
 
-  console.log(state?.message);
 
   useEffect(() => {
     if (state.message) {
@@ -37,7 +37,7 @@ export default function FormContainer({
     if (state.redirectUrl) {
       router.push(state.redirectUrl); // Redirect to the specified URL
     }
-  }, [state]);
+  }, [state, toast, router]);
   
   return <form action={formAction}>{children}</form>;
 }

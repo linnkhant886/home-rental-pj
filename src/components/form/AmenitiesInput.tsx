@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconType } from "react-icons";
 import { Label } from "../ui/label";
 
@@ -100,16 +100,18 @@ export default function AmenitiesInput({
 }: {
   defaultValue?: Amenity[];
 }) {
-  const amenitiesWithIcons = amenities.map((amenity) => ({
-    ...amenity,
-    selected:
-      defaultValue?.some(
-        (defaultAmenity) => defaultAmenity.name === amenity.name
-      ) || amenity.selected,
-  }));
+  const [selectedAmenities, setSelectedAmenities] = useState<Amenity[]>([]);
 
-  const [selectedAmenities, setSelectedAmenities] =
-    useState<Amenity[]>(amenitiesWithIcons);
+  useEffect(() => {
+    const amenitiesWithIcons = amenities.map((amenity) => ({
+      ...amenity,
+      selected:
+        defaultValue?.some(
+          (defaultAmenity) => defaultAmenity.name === amenity.name
+        ) || amenity.selected,
+    }));
+    setSelectedAmenities(amenitiesWithIcons);
+  }, [defaultValue]);
 
   const handleChange = (amenity: Amenity) => {
     setSelectedAmenities((prev) => {
@@ -121,6 +123,7 @@ export default function AmenitiesInput({
         return a;
       });
     });
+
     // console.log(selectedAmenities);
   };
   return (
@@ -128,7 +131,7 @@ export default function AmenitiesInput({
       <input
         type="hidden"
         name="amenities"
-        value={JSON.stringify(selectedAmenities)}
+        value={JSON.stringify(selectedAmenities.filter((a) => a.selected))}
       />
       <div className=" grid grid-cols-2 gap-3">
         {selectedAmenities.map((amenity) => (

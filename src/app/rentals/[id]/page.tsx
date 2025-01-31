@@ -39,6 +39,8 @@ export default async function EditProperty({ params }: { params: Params }) {
           <RentalimageUpdate imageUrl={image} propertyId={id} />
 
           <FormContainer action={editRental}>
+
+            <input type="hidden" name="propertyId" value={id} />
             <div className=" grid md:grid-cols-2 gap-4">
               <FormInput
                 name="name"
@@ -80,7 +82,7 @@ export default async function EditProperty({ params }: { params: Params }) {
                 <AmenitiesInput  defaultValue={defaultAmenities}/>
               </div>
 
-              <SubmitButton size="lg" className="mt-4" text="Create Property" />
+              <SubmitButton size="lg" className="mt-4" text="Update Property" />
             </div>
           </FormContainer>
         </div>

@@ -572,35 +572,98 @@ export const deleteRental = async (
   }
 };
 
-export const editRental = async (
+export const edieetRental = async (
   prevState: { message: string; error: string; redirectUrl?: string },
   formData: FormData
 ) => {
   try {
+    // console.log("Form Data:", formData);
+    const rawData = Object.fromEntries(formData);
+    const validatedFields = propertySchema.parse(rawData);
+    const amenities = formData.getAll("amenities") as string[];
+    const propertyId = formData.get("propertyId") as string;
 
-    console.log("Form Data:", formData);
+    await prisma.property.update({
+      where: {
+        id: propertyId,
+      },
+      data: {
+        ...validatedFields,
+      },
+    });
 
+    const UpdateamenitiesArray = JSON.parse(amenities.join(","));
+    const OrginalAmenities = await prisma.property.findFirst({
+      where: {
+        id: propertyId,
+      },
+      select: {
+        amenities: true,
+      },
+    });
+    const existingAmenities = JSON.parse(OrginalAmenities?.amenities ?? "[]");
 
-    // const rawData = Object.fromEntries(formData);
-    // const validatedFields = propertySchema.parse(rawData);
-    // const amenities = formData.getAll("amenities") as string[];
-    // Simulate a successful response
+    const isSame =
+      existingAmenities.length === UpdateamenitiesArray.length &&
+      existingAmenities.every((amenities: { name: string }) =>
+        UpdateamenitiesArray.includes(String(amenities.name))
+      );
 
-
-
-    
-    
+    if (!isSame) {
+      await prisma.property.update({
+        where: {
+          id: propertyId,
+        },
+        data: {
+          amenities: JSON.stringify(UpdateamenitiesArray),
+        },
+      });
+    }
+    revalidatePath("/rentals");
     return {
       message: "Rental updated successfully!",
       error: "",
-      redirectUrl: "/success", // Redirect URL after successful submission
     };
   } catch (error) {
     console.error("Error updating rental:", error);
     return {
       message: "",
       error: "Failed to update rental. Please try again.",
-      redirectUrl: "",
+    };
+  }
+};
+
+export const editRental = async (
+  prevState: { message: string; error: string; redirectUrl?: string },
+  formData: FormData
+) => {
+  try {
+    // console.log("Form Data:", formData);
+    const user = await getAuthUser();
+    const rawData = Object.fromEntries(formData);
+    const validatedFields = propertySchema.parse(rawData);
+    const propertyId = formData.get("propertyId") as string;
+
+    await prisma.property.update({
+      where: {
+        id: propertyId,
+        profileId: user.id,
+      },
+      data: {
+        ...validatedFields,
+      },
+    });
+   
+    revalidatePath("/rentals");
+    return {
+      message: "Rental updated successfully!",
+      error: "",
+    };
+  } catch (error) {
+    console.error("Error updating rental:", error);
+    return {
+      message: "",
+      error: "Failed to update rental. Please try again.",
     };
   }
 };
@@ -631,4 +694,3 @@ export const rentalImageUpload = async (formData: FormData) => {
     return { error: "Something went wrong , please contact support" };
   }
 };
-

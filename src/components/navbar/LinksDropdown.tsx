@@ -1,4 +1,3 @@
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +17,7 @@ import {
   SignUpButton,
 } from "@clerk/nextjs";
 import Usericon from "./Usericon";
+import { auth } from "@clerk/nextjs/server";
 
 type NavLink = {
   href: string;
@@ -29,18 +29,22 @@ export const links: NavLink[] = [
   { href: "/favorites ", label: "favorites" },
   { href: "/bookings ", label: "bookings" },
   { href: "/reviews ", label: "reviews" },
+  { href: "/reservations ", label: "reservations" },
   { href: "/rentals/create ", label: "create rental" },
+  { href: "/admin ", label: "admin" },
   { href: "/rentals", label: "my rentals" },
   { href: "/profile ", label: "profile" },
 ];
 
-export default  function LinksDropdown() {
+export default async function LinksDropdown() {
+  const { userId } =await auth();
+  const isAdmin = userId === process.env.ADMIN_USERID;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className=" flex gap-2 max-w-[100px]">
           <LuAlignLeft className="h-6 w-6" />
-          <Usericon/>
+          <Usericon />
         </Button>
       </DropdownMenuTrigger>
 
@@ -60,6 +64,7 @@ export default  function LinksDropdown() {
         </SignedOut>
         <SignedIn>
           {links.map((link) => {
+            if (!isAdmin && link.label === "admin") return null;
             return (
               <DropdownMenuItem key={link.href}>
                 <Link href={link.href} className=" capitalize w-full ">

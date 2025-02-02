@@ -653,7 +653,7 @@ export const editRental = async (
         ...validatedFields,
       },
     });
-   
+
     revalidatePath("/rentals");
     return {
       message: "Rental updated successfully!",
@@ -693,4 +693,12 @@ export const rentalImageUpload = async (formData: FormData) => {
     }
     return { error: "Something went wrong , please contact support" };
   }
+};
+
+export const fetchStats = async () => {
+  const userCount = await prisma.profile.count();
+  const propertiesCount = await prisma.property.count();
+  const bookingsCount = await prisma.booking.count();
+
+  return { userCount, propertiesCount, bookingsCount };
 };

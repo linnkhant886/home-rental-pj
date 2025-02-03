@@ -1,4 +1,4 @@
-import countries from 'world-countries';
+import countries from "world-countries";
 
 export const formattedCountries = countries.map((item) => {
   return {
@@ -15,19 +15,28 @@ export const findCountryByCode = (code: string) => {
 };
 
 export const findCountryByName = (name: string) => {
-    return formattedCountries.find(
-      (item) => item.name === name
-    );
+  return formattedCountries.find((item) => item.name === name);
+};
+
+export const formatCurrency = (amount: number | null) => {
+  const value = amount || 0;
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+};
+
+export const formatDate = (dateString: Date, onlyMonth?: boolean) => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
   };
 
+  if (!onlyMonth) {
+    options.day = "numeric";
+  }
 
-  export const formatCurrency = (amount: number | null) => {
-    const value = amount || 0;
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-  
+  return dateString.toLocaleDateString("en-US", options);
+};

@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { fetchBookingbyUser } from "@/Utils/actions";
+import { formatDate } from "@/Utils/countries";
 
 export default async function BookingsTable() {
   const userBooking = await fetchBookingbyUser();
@@ -22,13 +23,7 @@ export default async function BookingsTable() {
         btnText="Add Booking"
       />
     );
-  const formatDate = (dateString: Date) => {
-    return dateString.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
+ 
 
   return (
     <div className="cursor-pointer">

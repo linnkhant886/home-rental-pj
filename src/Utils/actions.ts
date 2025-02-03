@@ -13,6 +13,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { uploadImage } from "./supabase";
 import { calculateTotal } from "./calculateTotal";
+import { formatDate } from "./countries";
 
 const getAuthUser = async () => {
   const user = await currentUser();
@@ -701,4 +702,35 @@ export const fetchStats = async () => {
   const bookingsCount = await prisma.booking.count();
 
   return { userCount, propertiesCount, bookingsCount };
+};
+
+export const fetchChartData = async () => {
+  const date = new Date();
+  date.setMonth(date.getMonth() - 6);
+  const sixMonthsAgo = date;
+
+  const bookings = prisma.booking.findMany({
+    where: {
+      createdAt: {
+        gte: sixMonthsAgo,
+      },
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  const bookingPerMonth = (await bookings).reduce((total, currentvalue) => {
+    const date = formatDate(currentvalue.createdAt, true);
+    const existingEntry = total.find((entry) => entry.date === date);
+    if (existingEntry) {
+      existingEntry.count += 1;
+    } else {
+      total.push({ date, count: 1 });
+    }
+
+    return total;
+  }, [] as Array<{ date: string; count: number }>);
+
+  return bookingPerMonth;
 };

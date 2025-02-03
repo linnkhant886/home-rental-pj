@@ -73,7 +73,7 @@ export const categories: Category[] = [
   },
 ];
 
-export default function CategoriesInput({ category }: { category: string }) {
+export default function CategoriesInput({ category }: { category?: string }) {
   const defaultCategory =
     categories.find((item) => item.label === category)?.label ||
     categories[0].label;

@@ -8,7 +8,7 @@ import {
 import { Label } from "../ui/label";
 import { formattedCountries } from "@/Utils/countries";
 
-export default function CategoriesInput({ country }: { country: string }) {
+export default function CategoriesInput({ country }: { country?: string }) {
   const defaultCountry =
     formattedCountries.find((c) => c.name === country)?.name ||
     formattedCountries[0].name;

@@ -52,7 +52,7 @@ export default function CreatepropertyForm() {
             defaultValue="100"
           />
 
-          <CategoriesInput />
+          <CategoriesInput  />
           <div className="col-span-2">
             <Description
               name="description"

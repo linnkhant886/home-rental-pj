@@ -8,6 +8,8 @@ export default async function AdminDashboard() {
   const stats = await fetchStats();
   const chart = await fetchChartData();
 
+  const hasChartData = chart && Array.isArray(chart) && chart.length > 0;
+
   return (
     <div className="space-y-10">
       <div className="grid gap-4 md:grid-cols-3">
@@ -28,16 +30,18 @@ export default async function AdminDashboard() {
         />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            <h2 className="text-2xl font-bold mb-4">Monthly Bookings</h2>
-          </CardTitle>
-        </CardHeader>
-        <CardContent >
-          <Chart data={chart} />
-        </CardContent>
-      </Card>
+      {hasChartData && (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <h2 className="text-2xl font-bold mb-4">Monthly Bookings</h2>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Chart data={chart} />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

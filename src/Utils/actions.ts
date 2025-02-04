@@ -384,33 +384,29 @@ export const findExistingReview = async (propertyId: string) => {
 };
 
 export const createBooking = async (
-  prevState: { message: string; error: string; redirectUrl?: string }, // Add redirectUrl to the state
+  prevState: { message: string; error: string; redirectUrl?: string },
   formData: FormData
 ) => {
+  let bookingId: null | string = null;
+
   try {
     const user = await getAuthUser();
-    if (!user) {
-      return { message: "", error: "User not authenticated" }; // Return error if user is not authenticated
-    }
 
-    // Extract form data
     const propertyId = formData.get("propertyId")?.toString();
     const checkIn = formData.get("checkIn")?.toString();
     const checkOut = formData.get("checkOut")?.toString();
 
-    // Validate input
     if (!propertyId || !checkIn || !checkOut) {
-      return { message: "", error: "Missing required fields" }; // Return error if input is invalid
+      return { message: "", error: "Missing required fields" };
     }
 
-    // Fetch property details
     const property = await prisma.property.findUnique({
       where: { id: propertyId },
       select: { price: true },
     });
 
     if (!property) {
-      return { message: "", error: "Property not found" }; // Return error if property is not found
+      return { message: "", error: "Property not found" };
     }
 
     // Calculate total cost
@@ -421,7 +417,7 @@ export const createBooking = async (
     });
 
     // Create booking
-    await prisma.booking.create({
+    const booking = await prisma.booking.create({
       data: {
         profileId: user.id,
         propertyId,
@@ -431,19 +427,18 @@ export const createBooking = async (
         totalNights,
       },
     });
-
-    // Return success message and redirect URL
+    bookingId = booking.id;
     return {
-      message: "Booking created successfully!",
+      message: "",
       error: "",
-      redirectUrl: "/bookings", // Redirect to a success page with booking ID
+      redirectUrl: `/checkout?bookingId=${bookingId}`,
     };
   } catch (err) {
     console.error(err);
     return {
       message: "",
       error: "Something went wrong. Please contact support.",
-    }; // Return error if something goes wrong
+    };
   }
 };
 
@@ -468,7 +463,10 @@ export const fetchBookingbyUser = async () => {
   return bookings;
 };
 
-export const getUserName = async (prevState: unknown, formData: FormData) => {
+export const getUserName = async (
+  prevState: { message: string; error: string },
+  formData: FormData
+) => {
   const userName = formData.get("userName")?.toString().trim();
 
   if (!userName) {
@@ -699,7 +697,11 @@ export const rentalImageUpload = async (formData: FormData) => {
 export const fetchStats = async () => {
   const userCount = await prisma.profile.count();
   const propertiesCount = await prisma.property.count();
-  const bookingsCount = await prisma.booking.count();
+  const bookingsCount = await prisma.booking.count({
+    where: {
+      paymentStatus: true,
+    },
+  });
 
   return { userCount, propertiesCount, bookingsCount };
 };
@@ -733,4 +735,37 @@ export const fetchChartData = async () => {
   }, [] as Array<{ date: string; count: number }>);
 
   return bookingPerMonth;
+};
+
+export const fetchReservations = async () => {
+  const user = await getAuthUser();
+
+  const propertyCount = await prisma.property.count({
+    where: {
+      profileId: user.id,
+    },
+  });
+
+  const totalNights = await prisma.booking.aggregate({
+    _sum: {
+      totalNights: true,
+    },
+    where: {
+      profileId: user.id,
+    },
+  });
+
+  const totalIncome = await prisma.booking.aggregate({
+    _sum: {
+      orderTotal: true,
+    },
+    where: {
+      profileId: user.id,
+    },
+  });
+  return {
+    propertyCount,
+    totalNights: totalNights._sum.totalNights || 0,
+    totalIncome: totalIncome._sum.orderTotal || 0,
+  };
 };

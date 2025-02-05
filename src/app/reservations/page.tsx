@@ -1,3 +1,5 @@
+import MetricCard from "@/components/admin/MetricCard";
+import NewCard from "@/components/card/NewCard";
 import Emptysearch from "@/components/home/EmptyList";
 import {
   Table,
@@ -7,11 +9,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fetchBookingbyUser } from "@/Utils/actions";
-import { formatDate } from "@/Utils/countries";
+import { fetchBookingbyUser, fetchReservations } from "@/Utils/actions";
+import { formatCurrency, formatDate } from "@/Utils/countries";
+import { Calculator, Home, CalendarClock } from "lucide-react";
 
 export default async function Reservations() {
   const userBooking = await fetchBookingbyUser();
+  const reservationStats = await fetchReservations();
 
   if (!userBooking || userBooking.length === 0)
     return (
@@ -24,6 +28,25 @@ export default async function Reservations() {
 
   return (
     <div className="cursor-pointer">
+      <div className=" p-8 w-full">
+        <div className="grid gap-4 md:grid-cols-3">
+          <NewCard
+            title="Properties"
+            value={reservationStats.propertyCount || 0}
+            icon={<Home size={40} />}
+          />
+          <NewCard
+            title="Nights"
+            value={reservationStats.totalNights || 0}
+            icon={<CalendarClock size={40} />}
+          />
+          <NewCard
+            title="Total"
+            value={formatCurrency(reservationStats.totalIncome || 0)}
+            icon={<Calculator size={40} />}
+          />
+        </div>
+      </div>
       <p className="mb-2">Total Reservations: {userBooking.length}</p>
       <Table>
         <TableHeader>

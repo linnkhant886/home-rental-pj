@@ -1,4 +1,3 @@
-import MetricCard from "@/components/admin/MetricCard";
 import DeleteBooking from "@/components/booking/DeleteBooking";
 import Emptysearch from "@/components/home/EmptyList";
 import {
@@ -9,13 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fetchBookingbyUser, fetchReservations } from "@/Utils/actions";
+import { fetchBookingbyUser } from "@/Utils/actions";
 import { formatDate } from "@/Utils/countries";
-import { Calendar, Home, Users } from "lucide-react";
 
 export default async function BookingsTable() {
   const userBooking = await fetchBookingbyUser();
-  const reservationStats = await fetchReservations();
   // console.log(userBooking);
   if (!userBooking || userBooking.length === 0)
     return (
@@ -28,25 +25,7 @@ export default async function BookingsTable() {
 
   return (
     <div className="cursor-pointer">
-      <div>
-        <div className="grid gap-4 md:grid-cols-3">
-          <MetricCard
-            title="Users"
-            value={reservationStats.propertyCount || 0}
-            icon={<Users />}
-          />
-          <MetricCard
-            title="Properties"
-            value={reservationStats.totalNights || 0}
-            icon={<Home />}
-          />
-          <MetricCard
-            title="Bookings"
-            value={reservationStats.totalIncome || 0}
-            icon={<Calendar />}
-          />
-        </div>
-      </div>
+      
       <p>Total Bookings: {userBooking.length}</p>
       <Table>
         <TableHeader>

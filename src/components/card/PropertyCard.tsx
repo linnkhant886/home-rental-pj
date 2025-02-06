@@ -40,7 +40,7 @@ export default function PropertyCard({
             <div className="mt-auto pt-4">
               <div className="flex items-end justify-between">
                 <div>
-                  <span className="font-semibold">${price}</span>
+                  <span className="font-semibold dark:text-slate-950 ">${price}</span>
                   <span className="text-gray-500"> night</span>
                 </div>
                 <div className="text-sm text-gray-500">{country}</div>

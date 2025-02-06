@@ -1,3 +1,4 @@
+import Emptysearch from "@/components/home/EmptyList";
 import DeleteRental from "@/components/rentals/DeleteRental";
 import {
   Table,
@@ -14,7 +15,15 @@ import { MdOutlineEditNote } from "react-icons/md";
 export default async function myRental() {
   const userRentals = await fetchRentalsbyUser();
 
-  console.log();
+  if (!userRentals || userRentals.length === 0)
+    return (
+      <Emptysearch
+        heading="No Rentals Found"
+        message="Add some rentals"
+        btnText="Add Rental"
+      />
+    );
+
   return (
     <div className="cursor-pointer">
       <p>Total Active Properties: {userRentals.length}</p>

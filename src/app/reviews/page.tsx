@@ -1,13 +1,13 @@
 import EmptyList from "@/components/home/EmptyList";
 import { DeleteReview } from "@/components/reviews/DeleteReview";
 import ReviewCard from "@/components/reviews/ReviewCard";
-import {  fetchUserReviews } from "@/Utils/actions";
+import { fetchUserReviews } from "@/Utils/actions";
 
 export default async function reviews() {
   const userReview = await fetchUserReviews();
-  //   console.log(userReview);
 
-  if (!userReview) {
+ 
+  if (!userReview || userReview.length === 0) {
     return (
       <EmptyList
         heading="No Reviews Found"
@@ -43,4 +43,3 @@ export default async function reviews() {
     </div>
   );
 }
-

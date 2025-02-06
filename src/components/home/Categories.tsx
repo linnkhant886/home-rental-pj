@@ -10,10 +10,11 @@ export default function Categories({
   search?: string;
 }) {
   const searchTerm = search ? `&search=${search}` : "";
+
   return (
-    <section>
-      <ScrollArea className="py-6">
-        <div className=" flex gap-x-4 ">
+    <section className="mb-4">
+      <ScrollArea className="py-6 overflow-x-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+        <div className="flex gap-x-4">
           {categories.map((item: Category) => {
             const isActive = item.label === category;
             return (
@@ -22,11 +23,11 @@ export default function Categories({
                 href={`/?category=${item.label}${searchTerm}`}
               >
                 <article
-                  className={` p-3 flex flex-col duration-300 items-center gap-2 w-[100px] hover:text-primary cursor-pointer ${
+                  className={`p-3 flex flex-col duration-300 items-center gap-2 w-[100px] hover:text-primary cursor-pointer ${
                     isActive && "text-primary"
                   }`}
                 >
-                  <item.icon className=" h-8 w-8" />
+                  <item.icon className="h-8 w-8" />
                   <p className="capitalize">{item.label}</p>
                 </article>
               </Link>

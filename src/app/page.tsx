@@ -13,6 +13,7 @@ async function Home(props: { params: Params; searchParams: SearchParams }) {
 
   const category = searchParams?.category as string | undefined;
   const search = searchParams?.search as string | undefined;
+
   return (
       <section>
         <Categories category={category} search={search} />

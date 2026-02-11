@@ -155,38 +155,43 @@ export const fetchProperty = async ({
   search?: string;
   category?: string;
 }) => {
-  const property = await prisma.property.findMany({
-    where: {
-      category,
-      OR: [
-        {
-          name: {
-            contains: search,
-            mode: "insensitive",
+  try {
+    const property = await prisma.property.findMany({
+      where: {
+        category,
+        OR: [
+          {
+            name: {
+              contains: search,
+              mode: "insensitive",
+            },
           },
-        },
-        {
-          tagline: {
-            contains: search,
-            mode: "insensitive",
+          {
+            tagline: {
+              contains: search,
+              mode: "insensitive",
+            },
           },
-        },
-      ],
-    },
-    select: {
-      id: true,
-      name: true,
-      tagline: true,
-      image: true,
-      price: true,
-      country: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+        ],
+      },
+      select: {
+        id: true,
+        name: true,
+        tagline: true,
+        image: true,
+        price: true,
+        country: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-  return property;
+    return property;
+  } catch (error) {
+    console.error("fetchProperty failed:", error);
+    return [];
+  }
 };
 
 export const addFavorite = async ({

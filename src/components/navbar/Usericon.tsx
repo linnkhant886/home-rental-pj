@@ -6,10 +6,15 @@ export default async function Usericon() {
   const user = await currentUser();
   if (!user) return null;
 
-  const profileImage = await prisma.profile.findUnique({
-    where: { clerkId: user?.id },
-    select: { profileImage: true },
-  });
+  let profileImage: { profileImage: string } | null = null;
+  try {
+    profileImage = await prisma.profile.findUnique({
+      where: { clerkId: user.id },
+      select: { profileImage: true },
+    });
+  } catch (error) {
+    console.error("Usericon profile query failed:", error);
+  }
 
   if (profileImage?.profileImage)
     return (

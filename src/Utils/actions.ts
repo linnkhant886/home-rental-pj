@@ -20,7 +20,13 @@ const getAuthUser = async () => {
   if (!user) {
     throw new Error("You must be logged in to access this route");
   }
-  if (!user.privateMetadata.hasProfile) redirect("/profile/create");
+
+  const profile = await prisma.profile.findUnique({
+    where: { clerkId: user.id },
+    select: { id: true },
+  });
+
+  if (!profile) redirect("/profile/create");
   return user;
 };
 
@@ -131,6 +137,15 @@ export const createProperty = async (formData: FormData) => {
     const validateFile = imageSchema.parse(file);
     const fullpath = await uploadImage(validateFile);
 
+    const profile = await prisma.profile.findUnique({
+      where: { clerkId: user.id },
+      select: { id: true },
+    });
+
+    if (!profile) {
+      return { error: "Profile not found. Please create profile first." };
+    }
+
     await prisma.property.create({
       data: {
         ...validatedFields,
@@ -143,7 +158,12 @@ export const createProperty = async (formData: FormData) => {
       const errorMessages = err.errors.map((item) => item.message);
       return { error: errorMessages };
     }
-    return { error: "Something went wrong , please contact support" };
+    return {
+      error:
+        err instanceof Error
+          ? err.message
+          : "Something went wrong , please contact support",
+    };
   }
   redirect("/");
 };

@@ -17,9 +17,12 @@ export default function CreatepropertyForm() {
     try {
       const respone = await createProperty(formData);
       if (respone?.error) {
+        const errorMessage = Array.isArray(respone.error)
+          ? respone.error[0]
+          : respone.error;
         toast({
           variant: "destructive",
-          description: respone.error[0],
+          description: errorMessage,
         });
       } else {
         toast({
